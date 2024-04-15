@@ -1,16 +1,29 @@
 version: '3.9'
 
 services:
-  microservice1:
-    build: microservice1
+  chats_service_postgres:
+    image: postgres:16.1-bullseye
     volumes:
-      - ./microservice1:/usr/src/microservice1
-    env_file:
-      - .env
+      - chats_service_postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=${CHATS_SERVICE_POSTGRES_DB_NAME}
+      - POSTGRES_USER=${CHATS_SERVICE_POSTGRES_DB_USER}
+      - POSTGRES_PASSWORD=${CHATS_SERVICE_POSTGRES_DB_PASSWORD}
     ports:
-      - ${HOST_PORT}:8000
-    command: > 
-      sh -c "uvicorn main:app --host 0.0.0.0 --port 8000 --reload"
+      - ${CHATS_SERVICE_POSTGRES_DB_CONTAINER_PORT}:5432
+  chats_service:
+    build: chats_service
+    volumes:
+      - ./chats_service:/usr/src/chats_service
+    env_file:
+      - ./chats_service/.env
+    ports:
+      - 7766:8000
+    depends_on:
+      - chats_service_postgres
+    command: >
+      sh -c "alembic upgrade head && 
+      uvicorn main:app --host 0.0.0.0 --port 8000 --reload --log-config /usr/src/chats_service/uvicorn_logging.conf"
 
 volumes:
-  db_data:
+  chats_service_postgres_data:
