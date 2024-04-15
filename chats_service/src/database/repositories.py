@@ -56,14 +56,14 @@ class ChatRepository(AbstractRepository):
                 if сhat:
                     сhat.name = name
 
-    async def archive_chat(self, id: UUID) -> None:
+    async def archive(self, id: UUID) -> None:
         async with self.session as session:
             async with session.begin():
                 сhat = await session.get(models.Chat, id)
                 if сhat:
                     сhat.is_archived = True
 
-    async def unarchive_chat(self, id: UUID) -> None:
+    async def unarchive(self, id: UUID) -> None:
         async with self.session as session:
             async with session.begin():
                 сhat = await session.get(models.Chat, id)

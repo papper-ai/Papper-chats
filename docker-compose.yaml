@@ -28,6 +28,7 @@ services:
       uvicorn main:app --host 0.0.0.0 --port 8000 --reload --log-config /usr/src/chats_service/uvicorn_logging.conf"
     networks:
       - chats_services_network
+      - papper-backend
 
 volumes:
   chats_service_postgres_data:
@@ -35,3 +36,6 @@ volumes:
 networks:
   chats_services_network:
     name: chats_services_network
+  papper-backend:
+    name: papper-backend
+    external: true

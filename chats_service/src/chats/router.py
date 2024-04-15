@@ -6,11 +6,13 @@ from fastapi import APIRouter, BackgroundTasks, Body, Depends, status
 from src.chats.dependencies import chat_exists
 from src.chats.schemas import ChatResponse, CreateChatRequest
 from src.chats.utils import (
+    archive_chat,
     create_chat,
     delete_chat,
+    get_chat_by_id,
     get_users_chats,
     set_chat_name,
-    get_chat_by_id,
+    unarchive_chat,
 )
 from src.database.repositories import ChatRepository
 
@@ -35,7 +37,7 @@ async def delete_chat_route(
     await delete_chat(chat_id, chat_repository, background_tasks)
 
 
-@chats_router.put(
+@chats_router.patch(
     "/set_chat_name", status_code=status.HTTP_200_OK, response_model=ChatResponse
 )
 async def set_chat_name_route(
@@ -65,3 +67,19 @@ async def get_chat_by_id_route(
     chat_repository: Annotated[ChatRepository, Depends(chat_exists)],
 ):
     return await get_chat_by_id(chat_id, chat_repository)
+
+
+@chats_router.patch("/archive_chat", status_code=status.HTTP_200_OK, response_model=ChatResponse)
+async def archive_chat_route(
+    chat_id: Annotated[UUID, Body(...)],
+    chat_repository: Annotated[ChatRepository, Depends(chat_exists)],
+):
+    return await archive_chat(chat_id, chat_repository)
+
+
+@chats_router.patch("/unarchive_chat", status_code=status.HTTP_200_OK, response_model=ChatResponse)
+async def unarchive_chat_route(
+    chat_id: Annotated[UUID, Body(...)],
+    chat_repository: Annotated[ChatRepository, Depends(chat_exists)],
+):
+    return await unarchive_chat(chat_id, chat_repository)
