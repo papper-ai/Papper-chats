@@ -27,6 +27,7 @@ async def create_chat(create_chat_request: CreateChatRequest) -> ChatResponse:
 
     await chat_repository.add(chat)
 
+    '''
     try:
         await send_create_request_to_history_service(chat_id=chat.id)
     except Exception as e:
@@ -36,6 +37,7 @@ async def create_chat(create_chat_request: CreateChatRequest) -> ChatResponse:
             status_code=500,
             detail=f"Error creating history for chat {chat.id}",
         )
+    '''
 
     # Return the created vault representation
     return ChatResponse.model_validate(chat)
@@ -51,16 +53,20 @@ async def delete_chat(
     background_tasks: BackgroundTasks,
 ) -> None:
     await chat_repository.delete(chat_id)
-    background_tasks.add_task(delete_history_background, chat_id)
+
+    '''background_tasks.add_task(delete_history_background, chat_id)'''
 
 
 async def set_chat_name(
     chat_id: uuid.UUID, name: str, chat_repository: ChatRepository
-) -> None:
+) -> ChatResponse:
     try:
         await chat_repository.set_name(id=chat_id, name=name)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error setting chat name: {e}")
+    
+    chat = await chat_repository.get(chat_id)
+    return ChatResponse.model_validate(chat) 
 
 
 async def get_users_chats(user_id: uuid.UUID) -> List[ChatResponse]:

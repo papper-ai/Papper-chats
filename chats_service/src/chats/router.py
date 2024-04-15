@@ -5,7 +5,13 @@ from fastapi import APIRouter, BackgroundTasks, Body, Depends, status
 
 from src.chats.dependencies import chat_exists
 from src.chats.schemas import ChatResponse, CreateChatRequest
-from src.chats.utils import create_chat, delete_chat, get_users_chats, set_chat_name, get_chat_by_id
+from src.chats.utils import (
+    create_chat,
+    delete_chat,
+    get_users_chats,
+    set_chat_name,
+    get_chat_by_id,
+)
 from src.database.repositories import ChatRepository
 
 chats_router = APIRouter(tags=["Chats"])
@@ -29,13 +35,15 @@ async def delete_chat_route(
     await delete_chat(chat_id, chat_repository, background_tasks)
 
 
-@chats_router.put("/set_chat_name", status_code=status.HTTP_200_OK)
+@chats_router.put(
+    "/set_chat_name", status_code=status.HTTP_200_OK, response_model=ChatResponse
+)
 async def set_chat_name_route(
     chat_id: Annotated[UUID, Body(...)],
     name: Annotated[str, Body(...)],
     chat_repository: Annotated[ChatRepository, Depends(chat_exists)],
 ):
-    await set_chat_name(chat_id, name, chat_repository)
+    return await set_chat_name(chat_id, name, chat_repository)
 
 
 @chats_router.post(
@@ -55,6 +63,5 @@ async def get_users_chats_route(user_id: Annotated[UUID, Body(...)]):
 async def get_chat_by_id_route(
     chat_id: Annotated[UUID, Body(...)],
     chat_repository: Annotated[ChatRepository, Depends(chat_exists)],
-):  
+):
     return await get_chat_by_id(chat_id, chat_repository)
-    

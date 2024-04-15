@@ -11,6 +11,8 @@ services:
       - POSTGRES_PASSWORD=${CHATS_SERVICE_POSTGRES_DB_PASSWORD}
     ports:
       - ${CHATS_SERVICE_POSTGRES_DB_CONTAINER_PORT}:5432
+    networks:
+      - chats_services_network
   chats_service:
     build: chats_service
     volumes:
@@ -24,6 +26,12 @@ services:
     command: >
       sh -c "alembic upgrade head && 
       uvicorn main:app --host 0.0.0.0 --port 8000 --reload --log-config /usr/src/chats_service/uvicorn_logging.conf"
+    networks:
+      - chats_services_network
 
 volumes:
   chats_service_postgres_data:
+
+networks:
+  chats_services_network:
+    name: chats_services_network

@@ -6,13 +6,13 @@ from pydantic import BaseModel
 
 class CreateChatRequest(BaseModel):
     user_id: UUID
-    vault_id: str
+    vault_id: UUID
     name: str | None
 
 
 class ChatResponse(BaseModel):
     id: UUID
-    name: str
+    name: str | None
     vault_id: UUID
     user_id: UUID
     is_archived: bool
