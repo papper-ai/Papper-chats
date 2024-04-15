@@ -82,13 +82,17 @@ async def get_chat_by_id(
     return ChatResponse.model_validate(chat)
 
 
-async def archive_chat(chat_id: uuid.UUID, chat_repository: ChatRepository) -> None:
+async def archive_chat(
+    chat_id: uuid.UUID, chat_repository: ChatRepository
+) -> ChatResponse:
     await chat_repository.archive(chat_id)
     chat = await chat_repository.get(chat_id)
     return ChatResponse.model_validate(chat)
 
 
-async def unarchive_chat(chat_id: uuid.UUID, chat_repository: ChatRepository) -> None:
+async def unarchive_chat(
+    chat_id: uuid.UUID, chat_repository: ChatRepository
+) -> ChatResponse:
     await chat_repository.unarchive(chat_id)
     chat = await chat_repository.get(chat_id)
     return ChatResponse.model_validate(chat)
