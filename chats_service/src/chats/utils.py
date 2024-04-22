@@ -65,9 +65,6 @@ async def set_chat_name(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error setting chat name: {e}")
 
-    chat = await chat_repository.get(chat_id)
-    return ChatResponse.model_validate(chat)
-
 
 async def get_users_chats(user_id: uuid.UUID) -> List[ChatResponse]:
     chat_repository = ChatRepository()
@@ -86,13 +83,9 @@ async def archive_chat(
     chat_id: uuid.UUID, chat_repository: ChatRepository
 ) -> ChatResponse:
     await chat_repository.archive(chat_id)
-    chat = await chat_repository.get(chat_id)
-    return ChatResponse.model_validate(chat)
 
 
 async def unarchive_chat(
     chat_id: uuid.UUID, chat_repository: ChatRepository
 ) -> ChatResponse:
     await chat_repository.unarchive(chat_id)
-    chat = await chat_repository.get(chat_id)
-    return ChatResponse.model_validate(chat)
