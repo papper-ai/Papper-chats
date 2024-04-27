@@ -1,7 +1,7 @@
 from typing import Annotated, List
 from uuid import UUID
 
-from fastapi import APIRouter, BackgroundTasks, Body, Depends, status
+from fastapi import APIRouter, Body, Depends, status
 
 from src.chats.dependencies import chat_exists
 from src.chats.schemas import ChatResponse, CreateChatRequest
@@ -10,7 +10,8 @@ from src.chats.utils import (
     create_chat,
     delete_chat,
     get_chat_by_id,
-    get_users_chats,
+    get_user_archived_chats,
+    get_user_chats,
     set_chat_name,
     unarchive_chat,
 )
@@ -32,9 +33,8 @@ async def create_chat_route(
 async def delete_chat_route(
     chat_id: Annotated[UUID, Body(embed=True)],
     chat_repository: Annotated[ChatRepository, Depends(chat_exists)],
-    background_tasks: BackgroundTasks,
 ) -> None:
-    await delete_chat(chat_id, chat_repository, background_tasks)
+    await delete_chat(chat_id, chat_repository)
 
 
 @chats_router.patch("/set_chat_name", status_code=status.HTTP_202_ACCEPTED)
@@ -47,12 +47,25 @@ async def set_chat_name_route(
 
 
 @chats_router.post(
-    "/get_users_chats",
+    "/get_user_chats",
     status_code=status.HTTP_200_OK,
     response_model=List[ChatResponse],
 )
-async def get_users_chats_route(user_id: Annotated[UUID, Body(embed=True)]):
-    return await get_users_chats(user_id)
+async def get_user_chats_route(user_id: Annotated[UUID, Body(embed=True)]):
+    """Получить неархивированные чаты пользователя"""
+
+    return await get_user_chats(user_id)
+
+
+@chats_router.post(
+    "/get_user_archived_chats",
+    status_code=status.HTTP_200_OK,
+    response_model=List[ChatResponse],
+)
+async def get_user_archived_chats_route(user_id: Annotated[UUID, Body(embed=True)]):
+    """Получить архивированные чаты пользователя"""
+
+    return await get_user_archived_chats(user_id)
 
 
 @chats_router.post(
