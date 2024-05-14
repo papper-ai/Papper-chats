@@ -97,8 +97,12 @@ async def unarchive_chat_route(
     await unarchive_chat(chat_id, chat_repository)
 
 
-@chats_router.post("/get_vault_chats", status_code=status.HTTP_200_OK)
+@chats_router.post(
+    "/get_vault_chats",
+    status_code=status.HTTP_200_OK,
+    response_model=List[ChatResponse],
+)
 async def get_vault_chats_route(
     vault_id: Annotated[UUID, Body(embed=True)],
 ) -> None:
-    await get_vault_chats(vault_id)
+    return await get_vault_chats(vault_id)
