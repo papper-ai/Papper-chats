@@ -12,6 +12,7 @@ from src.chats.utils import (
     get_chat_by_id,
     get_user_archived_chats,
     get_user_chats,
+    get_vault_chats,
     set_chat_name,
     unarchive_chat,
 )
@@ -94,3 +95,10 @@ async def unarchive_chat_route(
     chat_repository: Annotated[ChatRepository, Depends(chat_exists)],
 ) -> None:
     await unarchive_chat(chat_id, chat_repository)
+
+
+@chats_router.post("/get_vault_chats", status_code=status.HTTP_200_OK)
+async def get_vault_chats_route(
+    vault_id: Annotated[UUID, Body(embed=True)],
+) -> None:
+    await get_vault_chats(vault_id)

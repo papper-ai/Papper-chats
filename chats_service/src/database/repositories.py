@@ -70,9 +70,20 @@ class ChatRepository(AbstractRepository):
                 if сhat:
                     сhat.is_archived = False
 
-    async def get_users_chats(self, user_id: UUID, archived: bool = False) -> typing.List[models.Chat] | None:
+    async def get_user_chats(
+        self, user_id: UUID, archived: bool = False
+    ) -> typing.List[models.Chat] | None:
         async with self.session as session:
             chats = await session.execute(
-                select(models.Chat).where(models.Chat.user_id == user_id, models.Chat.is_archived == archived)
+                select(models.Chat).where(
+                    models.Chat.user_id == user_id, models.Chat.is_archived == archived
+                )
+            )
+            return chats.scalars().all()
+
+    async def get_vault_chats(self, vault_id: UUID) -> typing.List[models.Chat] | None:
+        async with self.session as session:
+            chats = await session.execute(
+                select(models.Chat).where(models.Chat.vault_id == vault_id)
             )
             return chats.scalars().all()

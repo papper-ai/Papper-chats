@@ -44,7 +44,14 @@ async def set_chat_name(
 
 async def get_user_chats(user_id: uuid.UUID) -> List[ChatResponse]:
     chat_repository = ChatRepository()
-    chats = await chat_repository.get_users_chats(user_id=user_id, archived=False)
+    chats = await chat_repository.get_user_chats(user_id=user_id, archived=False)
+
+    return [ChatResponse.model_validate(chat) for chat in chats]
+
+
+async def get_vault_chats(vault_id: uuid.UUID) -> List[ChatResponse]:
+    chat_repository = ChatRepository()
+    chats = await chat_repository.get_vault_chats(vault_id=vault_id)
 
     return [ChatResponse.model_validate(chat) for chat in chats]
 
