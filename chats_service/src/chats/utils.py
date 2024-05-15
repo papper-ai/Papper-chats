@@ -58,7 +58,7 @@ async def get_vault_chats(vault_id: uuid.UUID) -> List[ChatResponse]:
 
 async def get_user_archived_chats(user_id: uuid.UUID) -> List[ChatResponse]:
     chat_repository = ChatRepository()
-    chats = await chat_repository.get_users_chats(user_id=user_id, archived=True)
+    chats = await chat_repository.get_user_chats(user_id=user_id, archived=True)
 
     return [ChatResponse.model_validate(chat) for chat in chats]
 
