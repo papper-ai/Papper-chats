@@ -3,6 +3,7 @@ version: '3.9'
 services:
   chats_service_postgres:
     image: postgres:16.1-bullseye
+    restart: unless-stopped
     volumes:
       - chats_service_postgres_data:/var/lib/postgresql/data
     environment:
@@ -15,6 +16,7 @@ services:
       - chats_services_network
   chats_service:
     build: chats_service
+    restart: unless-stopped
     volumes:
       - ./chats_service:/usr/src/chats_service
     env_file:
