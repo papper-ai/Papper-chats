@@ -1,11 +1,10 @@
-version: '3.9'
-
 services:
-  chats_service_postgres:
+  papper-chats-service-postgres:
     image: postgres:16.1-bullseye
+    container_name: papper-chats-service-postgres
     restart: unless-stopped
     volumes:
-      - chats_service_postgres_data:/var/lib/postgresql/data
+      - papper-chats-service-postgres-volume:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=${CHATS_SERVICE_POSTGRES_DB_NAME}
       - POSTGRES_USER=${CHATS_SERVICE_POSTGRES_DB_USER}
@@ -13,9 +12,10 @@ services:
     ports:
       - 8310:5432
     networks:
-      - chats_services_network
-  chats_service:
+      - papper-chats-service-network
+  papper-chats-service:
     build: chats_service
+    container_name: papper-chats-service
     restart: unless-stopped
     volumes:
       - ./chats_service:/usr/src/chats_service
@@ -24,20 +24,20 @@ services:
     ports:
       - 8300:8000
     depends_on:
-      - chats_service_postgres
+      - papper-chats-service-postgres
     command: >
       sh -c "alembic upgrade head && 
       uvicorn main:app --host 0.0.0.0 --port 8000 --reload --log-config /usr/src/chats_service/uvicorn_logging.conf"
     networks:
-      - chats_services_network
+      - papper-chats-service-network
       - papper-backend
 
 volumes:
-  chats_service_postgres_data:
+  papper-chats-service-postgres-volume:
 
 networks:
-  chats_services_network:
-    name: chats_services_network
+  papper-chats-service-network:
+    name: papper-chats-service-network
   papper-backend:
     name: papper-backend
     external: true
